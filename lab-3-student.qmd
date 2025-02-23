@@ -1,3 +1,20 @@
+---
+title: "Lab 3: Exploring Rodents with ggplot2"
+author: "Michael Torrisi"
+date: today
+format: html
+execute: 
+  echo: true
+  error: true
+  embed-resources: true
+code-tools: true
+toc: true
+theme: default
+fontcolor: black
+linkcolor: blue
+monobackgroundcolor: rgb(199, 221, 235)
+---
+
 # Part 1: Setup
 
 ## GitHub Workflow
@@ -40,6 +57,7 @@ In the code chunk below, load in the packages necessary for your analysis. You s
 ```{r}
 #| label: setup
 library(tidyverse)
+library(ggridges)
 ```
 
 # Part 2: Data Context
@@ -91,6 +109,7 @@ To build a `ggplot()`, we will use the following basic template that can be used
 
 ```{r}
 #| eval: false
+#| include: true
 #| label: ggplot-template-code
 
 ggplot(data = <DATA>,
@@ -106,7 +125,18 @@ Let's get started!
 
 ```{r}
 #| label: scatterplot
-
+ggplot(data = surveys,
+       mapping = aes(x = weight, 
+                     y = hindfoot_length)) +
+  geom_point(alpha = 0.25) +
+  geom_jitter(alpha = 0.25) +
+  facet_grid(.~species,
+             scales = "free") +
+  labs(x = "Weight (g)",
+       y = "",
+       title = "Species Hindfoot Length per Weight" ,
+       subtitle = "Hindfoot Length (mm)")+
+  theme_light()
 ```
 
 We can see there are **a lot** of points plotted on top of each other. Let's try and modify this plot to extract more information from it.
@@ -135,9 +165,24 @@ It takes a larger cognitive load to read text that is rotated. It is common prac
 
 ```{r}
 #| label: boxplot
-
-
+ggplot(data = surveys, 
+       mapping = aes(x = species, 
+                     y = weight)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_point(position = position_jitter(),
+             alpha = 0.25,
+             size = 0.25,
+             color = "steelblue4") +
+  theme(axis.text.x = element_text(angle = 25,
+                                   vjust = 0.5,
+                                   hjust = 0.3),
+        legend.position = "none") +
+  labs(x = "Species",
+       y = "",
+       title = "Weight Distribution by Species" ,
+       subtitle = "Weight (g)")
 ```
+
 
 **9. Create side-by-side boxplots to visualize the distribution of weight within each species.**
 
@@ -177,7 +222,20 @@ Some people (and journals) prefer for boxplots to be stacked with a specific ori
 
 ```{r}
 #| label: rotated-boxplot
-
+ggplot(data = surveys, 
+       mapping = aes(x = species, 
+                     y = weight)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_point(position = position_jitter(),
+             alpha = 0.25,
+             size = 0.25,
+             color = "steelblue4") +
+  theme(legend.position = "none") +
+  labs(x = "",
+       y = "Weight (g)",
+       title = "Weight Distribution by Species" ,
+       subtitle = "Species") +
+  coord_flip()
 ```
 
 Notice how vertically stacked boxplots make the species labels more readable than horizontally stacked boxplots (even when the axis labels are rotated). This is good practice!
@@ -195,3 +253,20 @@ For Lab 3 you will submit the link to your GitHub repository. Your rendered file
 **If any of the options are not included, your Lab 3 or Challenge 3 assignment will receive an "Incomplete" and you will be required to submit a revision.**
 
 In addition, your document should not have any warnings or messages output in your HTML document. **If your HTML contains warnings or messages, you will receive an "Incomplete" for document formatting and you will be required to submit a revision.**
+
+# Lab 3 Challenge: Ridge Plots
+
+```{r}
+#| label: ridgeline plot
+ggplot(data = surveys, 
+       mapping = aes(x = weight, 
+                     y = species)) +
+  geom_density_ridges(bandwidth = 2.5,
+                      fill = "steelblue4") +
+  theme(legend.position = "none") +
+  labs(x = "Weight (g)",
+       y = "",
+       title = "Weight Distribution by Species" ,
+       subtitle = "Species")
+```
+
